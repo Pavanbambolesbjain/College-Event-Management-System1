@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details - CampusConnect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Responsive Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark glass-nav fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold display-font text-white" href="/">
+        <i class="bi bi-rocket-takeoff-fill text-gradient me-2"></i>Campus<span class="text-gradient">Connect</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link text-white-50 px-3" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 px-3" href="/about">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 px-3" href="/events">Events</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 px-3" href="/contact">Contact</a></li>
+          <li class="nav-item ms-lg-2"><a class="nav-link text-white-50 px-3" href="/admin/login"><i class="bi bi-shield-lock-fill me-1"></i>Admin Portal</a></li>
+        </ul>
+        <ul class="navbar-nav ms-lg-3 align-items-center" id="auth-nav-options">
+          <!-- Populated dynamically -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <section class="py-5 mt-5" style="min-height: 85vh;">
+    <div class="container py-4">
+      <div class="mb-4">
+        <a href="/events" class="btn btn-outline-premium btn-sm"><i class="bi bi-arrow-left-short"></i> Back to Events</a>
+      </div>
+
+      <div class="row g-5">
+        <!-- Main details -->
+        <div class="col-lg-8">
+          <div class="glass-card p-4 mb-4">
+            <span class="badge bg-gradient-primary mb-2 px-3 py-2 text-uppercase fw-semibold" id="evt-category">-</span>
+            <h1 class="display-5 fw-bold text-white mb-3" id="evt-name">Loading Event...</h1>
+            
+            <div class="d-flex flex-wrap gap-4 text-secondary mb-4 py-2 border-top border-bottom border-secondary border-opacity-10">
+              <div><i class="bi bi-calendar3 text-gradient me-2"></i>Date: <span class="text-white fw-medium" id="evt-date">-</span></div>
+              <div><i class="bi bi-clock-fill text-gradient me-2"></i>Time: <span class="text-white fw-medium" id="evt-time">-</span></div>
+              <div><i class="bi bi-geo-alt-fill text-gradient me-2"></i>Venue: <span class="text-white fw-medium" id="evt-venue">-</span></div>
+            </div>
+
+            <h4 class="text-white fw-bold mb-3">Description</h4>
+            <p class="text-secondary mb-4 fs-6" id="evt-description" style="line-height: 1.6;">-</p>
+
+            <h4 class="text-white fw-bold mb-3">Eligibility Criteria</h4>
+            <p class="text-secondary mb-4" id="evt-eligibility">-</p>
+
+            <h4 class="text-white fw-bold mb-3">Event Rules</h4>
+            <pre class="text-secondary p-3 bg-gradient-dark rounded border border-secondary border-opacity-10" id="evt-rules" style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem;">-</pre>
+          </div>
+
+          <!-- Reviews/Feedback Panel -->
+          <div class="glass-card p-4">
+            <h4 class="text-white fw-bold mb-4"><i class="bi bi-chat-left-heart-fill text-gradient me-2"></i>Reviews & Rating</h4>
+            <div class="row align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-10">
+              <div class="col-md-4 text-center mb-3 mb-md-0">
+                <h1 class="display-3 fw-bold text-white mb-0" id="avg-rating">0.0</h1>
+                <div class="text-warning mb-1" id="avg-stars">
+                  <!-- Generated stars -->
+                </div>
+                <small class="text-muted" id="reviews-count">0 reviews</small>
+              </div>
+              <div class="col-md-8">
+                <!-- Simple rating distribution bars -->
+                <h6 class="text-white-50">Student feedback summaries are moderated. Only students registered in the event can post comments.</h6>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column gap-3" id="feedback-comments">
+              <!-- Rendered comments list -->
+              <p class="text-muted text-center py-3">No reviews submitted yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky Registration Widget -->
+        <div class="col-lg-4">
+          <div class="position-sticky" style="top: 100px;">
+            <div class="glass-card p-4 mb-4">
+              <h5 class="text-white fw-bold mb-3">Registration Summary</h5>
+              
+              <div class="d-flex justify-content-between text-secondary mb-2 small">
+                <span>Slots Available:</span>
+                <span id="capacity-summary">-</span>
+              </div>
+              <div class="progress capacity-progress mb-3" style="height: 10px;">
+                <div class="progress-bar bg-gradient-primary" role="progressbar" id="capacity-bar" style="width: 0%"></div>
+              </div>
+
+              <div class="d-flex justify-content-between text-secondary mb-2 small">
+                <span>Status:</span>
+                <span class="badge badge-status status-open" id="evt-status-badge">-</span>
+              </div>
+
+              <div class="d-flex justify-content-between text-secondary mb-2 small">
+                <span>Deadline:</span>
+                <span id="evt-deadline">-</span>
+              </div>
+
+              <div class="d-flex justify-content-between text-secondary mb-4 small">
+                <span>Organizer:</span>
+                <span id="evt-organizer" class="text-white fw-semibold">-</span>
+              </div>
+
+              <!-- Primary action button -->
+              <div id="registration-action-container">
+                <button class="btn btn-premium w-100 disabled" id="register-btn">Loading Details...</button>
+              </div>
+
+              <!-- Helper indicator (e.g. seats left) -->
+              <div class="text-center mt-3" id="helper-indicator">
+                <!-- Dynamic notification -->
+              </div>
+            </div>
+
+            <!-- Share widget -->
+            <div class="glass-card p-4 text-center">
+              <h6 class="text-white mb-3">Share Event</h6>
+              <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-dark btn-sm rounded-circle" onclick="showToast('Link copied to clipboard!', 'success')" style="width: 38px; height: 38px;"><i class="bi bi-link-45deg"></i></button>
+                <button class="btn btn-dark btn-sm rounded-circle" onclick="showToast('Sharing on WhatsApp...', 'info')" style="width: 38px; height: 38px;"><i class="bi bi-whatsapp"></i></button>
+                <button class="btn btn-dark btn-sm rounded-circle" onclick="showToast('Sharing on Twitter...', 'info')" style="width: 38px; height: 38px;"><i class="bi bi-twitter-x"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="text-center text-muted small">
+        © 2026 CampusConnect. All rights reserved. Built for TAE-I Engineering Evaluation.
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    let currentEvent = null;
+    let studentRegistered = false;
+    let userRegistrationId = null;
+
+    // Get event ID from URL path
+    const pathParts = window.location.pathname.split('/');
+    const eventId = pathParts[pathParts.length - 1];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadEventDetails();
+      await loadFeedback();
+    });
+
+    async function loadEventDetails() {
+      try {
+        const response = await apiFetch(`/api/events/${eventId}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          currentEvent = result.data;
+          renderEventDetails();
+          checkUserRegistration();
+        } else {
+          window.location.href = '/404';
+        }
+      } catch (error) {
+        console.error('Error fetching details:', error);
+      }
+    }
+
+    function renderEventDetails() {
+      document.getElementById('evt-category').textContent = currentEvent.category;
+      document.getElementById('evt-name').textContent = currentEvent.eventName;
+      document.getElementById('evt-date').textContent = formatDate(currentEvent.date);
+      document.getElementById('evt-time').textContent = `${formatTime(currentEvent.startTime)} - ${formatTime(currentEvent.endTime)}`;
+      document.getElementById('evt-venue').textContent = currentEvent.venue;
+      document.getElementById('evt-description').textContent = currentEvent.description;
+      document.getElementById('evt-eligibility').textContent = currentEvent.eligibility;
+      document.getElementById('evt-rules').textContent = currentEvent.rules;
+      document.getElementById('evt-organizer').textContent = currentEvent.organizer;
+      document.getElementById('evt-deadline').textContent = formatDate(currentEvent.registrationDeadline);
+      
+      // Status Badge
+      const statusBadge = document.getElementById('evt-status-badge');
+      statusBadge.textContent = currentEvent.status;
+      statusBadge.className = 'badge badge-status';
+      if (currentEvent.status === 'Registration Open') statusBadge.classList.add('status-open');
+      else if (currentEvent.status === 'Upcoming') statusBadge.classList.add('status-upcoming');
+      else if (currentEvent.status === 'Registration Closed') statusBadge.classList.add('status-closed');
+      else if (currentEvent.status === 'Completed') statusBadge.classList.add('status-completed');
+      else if (currentEvent.status === 'Cancelled') statusBadge.classList.add('status-cancelled');
+
+      // Capacity bar
+      const occupied = currentEvent.currentRegistrations;
+      const capacity = currentEvent.maxCapacity;
+      document.getElementById('capacity-summary').textContent = `${occupied} / ${capacity} Slots occupied`;
+      
+      const pct = Math.min(Math.round((occupied / capacity) * 100), 100);
+      document.getElementById('capacity-bar').style.width = `${pct}%`;
+      
+      // Capacity warning
+      const seatsLeft = capacity - occupied;
+      const helper = document.getElementById('helper-indicator');
+      if (seatsLeft > 0 && seatsLeft <= 5 && currentEvent.status === 'Registration Open') {
+        helper.innerHTML = `<span class="text-warning small fw-bold"><i class="bi bi-fire"></i> Hurry! Only ${seatsLeft} seats remaining!</span>`;
+      }
+    }
+
+    async function checkUserRegistration() {
+      const user = getCurrentUser();
+      const container = document.getElementById('registration-action-container');
+      
+      if (!user) {
+        // Guest user: show Register button, redirects to login on click
+        container.innerHTML = `<button onclick="handleRegisterRedirect()" class="btn btn-premium w-100"><i class="bi bi-box-arrow-in-right me-1"></i> Log in to Register</button>`;
+        return;
+      }
+
+      if (user.role === 'admin') {
+        container.innerHTML = `<a href="/admin/manage-events" class="btn btn-outline-premium w-100"><i class="bi bi-pencil-square me-1"></i> Edit Event (Admin)</a>`;
+        return;
+      }
+
+      // Check registrations.json for studentId
+      try {
+        const response = await apiFetch(`/api/registrations/student/${user.studentId || user.id}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          const matchingReg = result.data.find(r => r.eventId === eventId && r.status !== 'Cancelled');
+          if (matchingReg) {
+            studentRegistered = true;
+            userRegistrationId = matchingReg.registrationId;
+            container.innerHTML = `
+              <div class="alert alert-success border-0 small text-center p-2 mb-3 bg-opacity-10 bg-success text-success">
+                <i class="bi bi-patch-check-fill me-1"></i> You are registered!
+              </div>
+              <button onclick="handleCancelRegistration()" class="btn btn-outline-danger w-100"><i class="bi bi-x-circle me-1"></i> Cancel Registration</button>
+            `;
+          } else {
+            renderActiveRegistrationButton();
+          }
+        }
+      } catch (error) {
+        console.error('Error checking registration status:', error);
+      }
+    }
+
+    function renderActiveRegistrationButton() {
+      const container = document.getElementById('registration-action-container');
+      
+      if (currentEvent.status !== 'Registration Open') {
+        container.innerHTML = `<button class="btn btn-secondary w-100 disabled" disabled><i class="bi bi-lock-fill me-1"></i> Registration Closed</button>`;
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      if (currentEvent.registrationDeadline < today) {
+        container.innerHTML = `<button class="btn btn-secondary w-100 disabled" disabled><i class="bi bi-clock-history me-1"></i> Deadline Passed</button>`;
+        return;
+      }
+
+      if (currentEvent.currentRegistrations >= currentEvent.maxCapacity) {
+        container.innerHTML = `<button class="btn btn-warning w-100 disabled text-dark" disabled><i class="bi bi-exclamation-triangle-fill me-1"></i> Event Fully Booked</button>`;
+        return;
+      }
+
+      container.innerHTML = `<button onclick="handleEventRegister()" class="btn btn-premium w-100"><i class="bi bi-calendar-check me-1"></i> Register Now</button>`;
+    }
+
+    function handleRegisterRedirect() {
+      window.location.href = `/login?error=Please log in to register for events.`;
+    }
+
+    async function handleEventRegister() {
+      showToast('Processing registration...', 'info');
+      try {
+        const response = await apiFetch('/api/registrations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventId })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Registration successful!', 'success');
+          // Reload page to update counters and show cancel button
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        } else {
+          showToast(result.message || 'Registration failed', 'error');
+        }
+      } catch (error) {
+        console.error('Error registering:', error);
+      }
+    }
+
+    async function handleCancelRegistration() {
+      if (!confirm('Are you sure you want to cancel your registration for this event? This will release your seat.')) return;
+      showToast('Cancelling registration...', 'info');
+      try {
+        const response = await apiFetch(`/api/registrations/${userRegistrationId}`, {
+          method: 'DELETE'
+        });
+        const result = await response.json();
+        if (result.success) {
+          showToast('Registration cancelled successfully', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        } else {
+          showToast(result.message || 'Cancellation failed', 'error');
+        }
+      } catch (error) {
+        console.error('Error cancelling registration:', error);
+      }
+    }
+
+    async function loadFeedback() {
+      try {
+        // Fetch all feedback
+        const response = await apiFetch('/api/feedback');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          // Filter feedback for this event
+          const eventFeedback = result.data.filter(f => f.eventId === eventId);
+          const feedbackCount = eventFeedback.length;
+          
+          const avgField = document.getElementById('avg-rating');
+          const countField = document.getElementById('reviews-count');
+          const starsField = document.getElementById('avg-stars');
+          const commentsList = document.getElementById('feedback-comments');
+
+          if (feedbackCount === 0) {
+            avgField.textContent = '0.0';
+            countField.textContent = '0 reviews';
+            starsField.innerHTML = '<i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>';
+            commentsList.innerHTML = '<p class="text-muted text-center py-3">No reviews submitted yet.</p>';
+            return;
+          }
+
+          // Calculate average
+          const totalRating = eventFeedback.reduce((sum, f) => sum + f.rating, 0);
+          const avg = parseFloat((totalRating / feedbackCount).toFixed(1));
+          
+          avgField.textContent = avg.toFixed(1);
+          countField.textContent = `${feedbackCount} review${feedbackCount > 1 ? 's' : ''}`;
+          
+          // Render average stars
+          let starsHTML = '';
+          const floor = Math.floor(avg);
+          for (let i = 1; i <= 5; i++) {
+            if (i <= floor) starsHTML += '<i class="bi bi-star-fill"></i>';
+            else if (i - 0.5 <= avg) starsHTML += '<i class="bi bi-star-half"></i>';
+            else starsHTML += '<i class="bi bi-star"></i>';
+          }
+          starsField.innerHTML = starsHTML;
+
+          // Render comments
+          commentsList.innerHTML = '';
+          eventFeedback.forEach(fb => {
+            let userStars = '';
+            for (let i = 1; i <= 5; i++) {
+              userStars += i <= fb.rating ? '<i class="bi bi-star-fill text-warning"></i>' : '<i class="bi bi-star text-muted"></i>';
+            }
+            const studentName = fb.student ? fb.student.fullName : 'Verified Student';
+            const studentDept = fb.student ? fb.student.course : 'Student';
+
+            commentsList.innerHTML += `
+              <div class="p-3 bg-gradient-dark rounded border border-secondary border-opacity-10">
+                <div class="d-flex justify-content-between mb-2">
+                  <div>
+                    <h6 class="text-white mb-0 fw-bold">${studentName}</h6>
+                    <small class="text-muted">${studentDept}</small>
+                  </div>
+                  <div>
+                    ${userStars}
+                  </div>
+                </div>
+                <p class="text-secondary small mb-0">"${fb.comment}"</p>
+              </div>
+            `;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading feedback:', error);
+      }
+    }
+  </script>
+</body>
+</html>

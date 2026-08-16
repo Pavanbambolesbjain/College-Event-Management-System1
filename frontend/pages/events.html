@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Events – CampusConnect</title>
+  <meta name="description" content="Discover and register for upcoming college events. Filter by category, date, venue, and sort by popularity.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+  <style>
+    .filter-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 28px;
+      position: sticky;
+      top: 90px;
+    }
+    .filter-section { margin-bottom: 28px; }
+    .filter-section:last-child { margin-bottom: 0; }
+    .filter-label { font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+
+    .cat-filter-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
+      border-radius: 100px; padding: 7px 16px; font-size: 0.82rem; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer; transition: all 0.2s ease;
+      font-family: 'Outfit', sans-serif; margin: 4px;
+    }
+    .cat-filter-pill:hover, .cat-filter-pill.active {
+      background: rgba(99,102,241,0.12);
+      border-color: rgba(99,102,241,0.3);
+      color: #818cf8;
+    }
+
+    /* Events search hero */
+    .events-hero {
+      padding: 120px 0 60px;
+      background: linear-gradient(180deg, rgba(99,102,241,0.06) 0%, transparent 100%);
+    }
+    .search-wrap {
+      position: relative; max-width: 600px; margin: 0 auto;
+    }
+    .search-wrap input { padding-left: 50px !important; height: 56px; font-size: 1rem; border-radius: 14px !important; }
+    .search-wrap .search-icon {
+      position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 1.1rem; pointer-events: none;
+    }
+
+    .results-header { font-size: 0.9rem; color: var(--text-muted); }
+    .sort-select { max-width: 200px; }
+
+    #events-grid { min-height: 300px; }
+    .no-results { text-align: center; padding: 80px 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark glass-nav fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold display-font text-white" href="/">
+        <span class="text-gradient">⬡</span> Campus<span class="text-gradient">Connect</span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center gap-1">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/events">Events</a></li>
+          <li class="nav-item"><a class="nav-link" href="/clubs">Clubs</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/login"><i class="bi bi-shield-lock-fill me-1"></i>Admin</a></li>
+        </ul>
+        <ul class="navbar-nav align-items-center gap-2" id="auth-nav-options"></ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO / SEARCH -->
+  <section class="events-hero">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto"><i class="bi bi-calendar-event-fill"></i> All Events</div>
+        <h1 class="section-title display-4 mb-3">Discover <span class="text-gradient">Your Next</span> Event</h1>
+        <p class="text-secondary fs-5 mb-5">Find hackathons, workshops, cultural fests, sports, and more — all open for registration.</p>
+        <div class="search-wrap">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" id="search-input" class="form-control form-glass w-100" placeholder="Search events, organizers, venues..." oninput="applyFilters()">
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="text-center mb-2">
+        <div id="cat-filter-pills">
+          <span class="cat-filter-pill active" data-cat="All" onclick="setCatFilter(this)">
+            <i class="bi bi-grid"></i> All
+          </span>
+          <span class="cat-filter-pill" data-cat="Technical" onclick="setCatFilter(this)">
+            <i class="bi bi-cpu-fill"></i> Technical
+          </span>
+          <span class="cat-filter-pill" data-cat="Hackathon" onclick="setCatFilter(this)">
+            <i class="bi bi-code-slash"></i> Hackathon
+          </span>
+          <span class="cat-filter-pill" data-cat="Cultural" onclick="setCatFilter(this)">
+            <i class="bi bi-music-note-beamed"></i> Cultural
+          </span>
+          <span class="cat-filter-pill" data-cat="Workshop" onclick="setCatFilter(this)">
+            <i class="bi bi-tools"></i> Workshop
+          </span>
+          <span class="cat-filter-pill" data-cat="Sports" onclick="setCatFilter(this)">
+            <i class="bi bi-trophy-fill"></i> Sports
+          </span>
+          <span class="cat-filter-pill" data-cat="Seminar" onclick="setCatFilter(this)">
+            <i class="bi bi-person-video3"></i> Seminar
+          </span>
+          <span class="cat-filter-pill" data-cat="Competition" onclick="setCatFilter(this)">
+            <i class="bi bi-award-fill"></i> Competition
+          </span>
+          <span class="cat-filter-pill" data-cat="Career" onclick="setCatFilter(this)">
+            <i class="bi bi-briefcase-fill"></i> Career
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTS LISTING -->
+  <section style="padding: 40px 0 80px;">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 d-none d-lg-block">
+          <div class="filter-panel">
+            <h5 class="text-white fw-bold mb-4"><i class="bi bi-funnel-fill text-gradient me-2"></i>Filters</h5>
+
+            <!-- Status Filter -->
+            <div class="filter-section">
+              <div class="filter-label">Status</div>
+              <select class="form-select form-glass w-100" id="filter-status" onchange="applyFilters()">
+                <option value="All">All Status</option>
+                <option value="Registration Open">Registration Open</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-section">
+              <div class="filter-label">Category</div>
+              <select class="form-select form-glass w-100" id="filter-category" onchange="applyFilters()">
+                <option value="All">All Categories</option>
+                <option value="Technical">Technical</option>
+                <option value="Hackathon">Hackathon</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Sports">Sports</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Competition">Competition</option>
+                <option value="Career">Career</option>
+                <option value="Fest">Fest</option>
+              </select>
+            </div>
+
+            <!-- Sort -->
+            <div class="filter-section">
+              <div class="filter-label">Sort By</div>
+              <select class="form-select form-glass w-100" id="sort-select" onchange="applyFilters()">
+                <option value="upcoming">Upcoming First</option>
+                <option value="most_registered">Most Popular</option>
+                <option value="newest">Recently Added</option>
+                <option value="least_filled">Most Seats Available</option>
+              </select>
+            </div>
+
+            <!-- Clear Filters -->
+            <button class="btn btn-outline-premium btn-sm w-100 mt-2" onclick="clearFilters()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="col-lg-9">
+          <!-- Results Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <p class="results-header mb-0" id="results-header">Loading events...</p>
+            <!-- Mobile sort -->
+            <select class="form-select form-glass sort-select d-lg-none" id="sort-select-mobile" onchange="applyFilters()">
+              <option value="upcoming">Upcoming First</option>
+              <option value="most_registered">Most Popular</option>
+              <option value="newest">Recently Added</option>
+            </select>
+          </div>
+
+          <div class="row g-4" id="events-grid">
+            <!-- Skeleton loading -->
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+            <div class="col-md-6 col-xl-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    let allEvents = [];
+    let activeCat = 'All';
+
+    function setCatFilter(el) {
+      document.querySelectorAll('.cat-filter-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      activeCat = el.dataset.cat;
+      // Sync sidebar select
+      const catSel = document.getElementById('filter-category');
+      if (catSel) {
+        catSel.value = activeCat === 'All' ? 'All' : activeCat;
+      }
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const search   = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+      const status   = document.getElementById('filter-status')?.value || 'All';
+      const category = document.getElementById('filter-category')?.value || 'All';
+      const sort     = document.getElementById('sort-select')?.value || document.getElementById('sort-select-mobile')?.value || 'upcoming';
+
+      // Use pill category if set
+      const catFilter = activeCat !== 'All' ? activeCat : category;
+
+      let filtered = allEvents.filter(evt => {
+        const matchSearch   = !search || evt.eventName?.toLowerCase().includes(search) || evt.description?.toLowerCase().includes(search) || evt.venue?.toLowerCase().includes(search) || evt.organizer?.toLowerCase().includes(search);
+        const matchStatus   = status === 'All' || evt.status === status;
+        const matchCategory = catFilter === 'All' || evt.category === catFilter;
+        return matchSearch && matchStatus && matchCategory;
+      });
+
+      // Sort
+      if (sort === 'most_registered') filtered.sort((a,b) => (b.currentRegistrations||0) - (a.currentRegistrations||0));
+      else if (sort === 'newest') filtered.sort((a,b) => b.eventId?.localeCompare(a.eventId));
+      else if (sort === 'least_filled') filtered.sort((a,b) => (a.currentRegistrations/a.maxCapacity||0) - (b.currentRegistrations/b.maxCapacity||0));
+      else filtered.sort((a,b) => new Date(a.date) - new Date(b.date)); // upcoming
+
+      renderGrid(filtered);
+    }
+
+    function renderGrid(events) {
+      const grid = document.getElementById('events-grid');
+      const header = document.getElementById('results-header');
+      if (header) header.textContent = `Showing ${events.length} event${events.length !== 1 ? 's' : ''}`;
+
+      if (events.length === 0) {
+        grid.innerHTML = `
+          <div class="col-12 no-results">
+            <div style="font-size:4rem;opacity:0.3;margin-bottom:20px;">🔍</div>
+            <h4 class="text-white fw-bold mb-2">No events found</h4>
+            <p class="text-secondary mb-4">Try adjusting your search or filters.</p>
+            <button onclick="clearFilters()" class="btn btn-premium">Clear Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      events.forEach(evt => {
+        grid.innerHTML += `<div class="col-md-6 col-xl-4">${buildEventCard(evt)}</div>`;
+      });
+    }
+
+    function clearFilters() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('filter-status').value = 'All';
+      document.getElementById('filter-category').value = 'All';
+      document.getElementById('sort-select').value = 'upcoming';
+      activeCat = 'All';
+      document.querySelectorAll('.cat-filter-pill').forEach((p,i) => p.classList.toggle('active', i===0));
+      applyFilters();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Read URL params (category pre-filter from homepage)
+      const params = new URLSearchParams(window.location.search);
+      const preCategory = params.get('category');
+      if (preCategory) {
+        activeCat = preCategory;
+        const pill = document.querySelector(`.cat-filter-pill[data-cat="${preCategory}"]`);
+        if (pill) {
+          document.querySelectorAll('.cat-filter-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+        }
+        const catSel = document.getElementById('filter-category');
+        if (catSel) catSel.value = preCategory;
+      }
+
+      try {
+        const response = await apiFetch('/api/events');
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          allEvents = result.data;
+          applyFilters();
+        }
+      } catch (e) {
+        console.error('Events fetch error:', e);
+        document.getElementById('events-grid').innerHTML = `
+          <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-wifi-off fs-1 d-block mb-3 opacity-50"></i>
+            <p>Could not load events. Please check your connection.</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

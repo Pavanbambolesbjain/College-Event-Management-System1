@@ -1,0 +1,72 @@
+[
+  {
+    "registrationId": "REG001",
+    "eventId": "EVT001",
+    "studentId": "STU202601",
+    "status": "Registered",
+    "registeredAt": "2026-08-01T10:00:00.000Z"
+  },
+  {
+    "registrationId": "REG002",
+    "eventId": "EVT001",
+    "studentId": "STU202602",
+    "status": "Registered",
+    "registeredAt": "2026-08-02T11:00:00.000Z"
+  },
+  {
+    "registrationId": "REG003",
+    "eventId": "EVT002",
+    "studentId": "STU202603",
+    "status": "Registered",
+    "registeredAt": "2026-08-03T09:30:00.000Z"
+  },
+  {
+    "registrationId": "REG004",
+    "eventId": "EVT002",
+    "studentId": "STU202604",
+    "status": "Registered",
+    "registeredAt": "2026-08-04T14:00:00.000Z"
+  },
+  {
+    "registrationId": "REG005",
+    "eventId": "EVT003",
+    "studentId": "STU202605",
+    "status": "Registered",
+    "registeredAt": "2026-08-05T16:15:00.000Z"
+  },
+  {
+    "registrationId": "REG006",
+    "eventId": "EVT004",
+    "studentId": "STU202601",
+    "status": "Registered",
+    "registeredAt": "2026-08-06T10:45:00.000Z"
+  },
+  {
+    "registrationId": "REG007",
+    "eventId": "EVT006",
+    "studentId": "STU202602",
+    "status": "Attended",
+    "registeredAt": "2026-05-01T09:00:00.000Z"
+  },
+  {
+    "registrationId": "REG008",
+    "eventId": "EVT006",
+    "studentId": "STU202603",
+    "status": "Attended",
+    "registeredAt": "2026-05-01T09:15:00.000Z"
+  },
+  {
+    "registrationId": "REG009",
+    "eventId": "EVT006",
+    "studentId": "STU202605",
+    "status": "Attended",
+    "registeredAt": "2026-05-02T10:00:00.000Z"
+  },
+  {
+    "registrationId": "REG010",
+    "eventId": "EVT007",
+    "studentId": "STU202604",
+    "status": "Registered",
+    "registeredAt": "2026-07-15T11:20:00.000Z"
+  }
+]

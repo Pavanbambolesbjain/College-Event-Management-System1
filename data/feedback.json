@@ -1,0 +1,42 @@
+[
+  {
+    "feedbackId": "FB001",
+    "eventId": "EVT006",
+    "studentId": "STU202602",
+    "rating": 5,
+    "comment": "Excellent seminar! The speaker explained Large Language Models in a very simple way.",
+    "createdAt": "2026-05-10T14:00:00.000Z"
+  },
+  {
+    "feedbackId": "FB002",
+    "eventId": "EVT006",
+    "studentId": "STU202603",
+    "rating": 4,
+    "comment": "Very informative. However, it would be better if we had more time for Q&A.",
+    "createdAt": "2026-05-10T14:05:00.000Z"
+  },
+  {
+    "feedbackId": "FB003",
+    "eventId": "EVT006",
+    "studentId": "STU202605",
+    "rating": 5,
+    "comment": "Absolutely brilliant! The hands-on cloud demo was highly engaging.",
+    "createdAt": "2026-05-10T14:15:00.000Z"
+  },
+  {
+    "feedbackId": "FB004",
+    "eventId": "EVT001",
+    "studentId": "STU202601",
+    "rating": 5,
+    "comment": "Looking forward to TechFest! The event coordinator team is doing a fantastic job promoting it.",
+    "createdAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "feedbackId": "FB005",
+    "eventId": "EVT003",
+    "studentId": "STU202605",
+    "rating": 4,
+    "comment": "Registration was smooth. The pre-requisites list was helpful.",
+    "createdAt": "2026-08-05T18:00:00.000Z"
+  }
+]

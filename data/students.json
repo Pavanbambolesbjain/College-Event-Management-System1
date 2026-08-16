@@ -1,0 +1,57 @@
+[
+  {
+    "studentId": "STU202601",
+    "fullName": "Aarav Patel",
+    "email": "aarav.patel@college.edu",
+    "mobile": "9876543210",
+    "college": "Pune Institute of Computer Technology",
+    "course": "Computer Engineering",
+    "year": "3",
+    "password": "$2a$10$DoO0RZRelu1rluz8yMy7M.p0UFv8vmPfokSuTq21DiVjIMZ10VO7K",
+    "createdAt": "2026-01-15T10:00:00.000Z"
+  },
+  {
+    "studentId": "STU202602",
+    "fullName": "Diya Iyer",
+    "email": "diya.iyer@college.edu",
+    "mobile": "9823456789",
+    "college": "Pune Institute of Computer Technology",
+    "course": "Information Technology",
+    "year": "4",
+    "password": "$2a$10$DoO0RZRelu1rluz8yMy7M.p0UFv8vmPfokSuTq21DiVjIMZ10VO7K",
+    "createdAt": "2026-01-16T11:30:00.000Z"
+  },
+  {
+    "studentId": "STU202603",
+    "fullName": "Rohan Verma",
+    "email": "rohan.verma@college.edu",
+    "mobile": "9765432109",
+    "college": "Pune Institute of Computer Technology",
+    "course": "Electronics & TC Engineering",
+    "year": "2",
+    "password": "$2a$10$DoO0RZRelu1rluz8yMy7M.p0UFv8vmPfokSuTq21DiVjIMZ10VO7K",
+    "createdAt": "2026-02-01T09:15:00.000Z"
+  },
+  {
+    "studentId": "STU202604",
+    "fullName": "Ananya Rao",
+    "email": "ananya.rao@college.edu",
+    "mobile": "9988776655",
+    "college": "Pune Institute of Computer Technology",
+    "course": "Computer Science & Design",
+    "year": "1",
+    "password": "$2a$10$DoO0RZRelu1rluz8yMy7M.p0UFv8vmPfokSuTq21DiVjIMZ10VO7K",
+    "createdAt": "2026-02-10T14:20:00.000Z"
+  },
+  {
+    "studentId": "STU202605",
+    "fullName": "Kabir Singh",
+    "email": "kabir.singh@college.edu",
+    "mobile": "9554433221",
+    "college": "Pune Institute of Computer Technology",
+    "course": "Mechanical Engineering",
+    "year": "3",
+    "password": "$2a$10$DoO0RZRelu1rluz8yMy7M.p0UFv8vmPfokSuTq21DiVjIMZ10VO7K",
+    "createdAt": "2026-02-12T16:45:00.000Z"
+  }
+]

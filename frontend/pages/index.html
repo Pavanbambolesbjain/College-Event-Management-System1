@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect – Smart College Event Management System</title>
+  <meta name="description" content="CampusConnect is the ultimate college event platform. Discover, register, and experience technical fests, hackathons, workshops, cultural events & more. QR check-in, digital certificates, real-time analytics.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+  <style>
+    /* ---- PAGE-SPECIFIC STYLES ---- */
+    .hero-section { padding-top: 110px; padding-bottom: 80px; min-height: 100vh; }
+
+    .hero-headline { font-size: clamp(2.6rem, 5vw, 4.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+
+    .hero-stat-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px; padding: 8px 18px; font-size: 0.85rem; color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .scroll-indicator {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+      animation: bounceDown 2s ease-in-out infinite;
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); opacity: 0.6; }
+      50%       { transform: translateY(8px); opacity: 1; }
+    }
+
+    /* Floating card in hero */
+    .hero-float-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px 20px;
+      backdrop-filter: blur(20px); display: flex; align-items: center; gap: 14px; width: 100%;
+    }
+    .hero-float-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+    }
+
+    /* Category cards grid */
+    .cat-section { padding: 100px 0; background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); }
+
+    /* Events section */
+    .events-section { padding: 100px 0; }
+
+    /* Countdown section */
+    .countdown-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(168,85,247,0.04));
+      border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Clubs section */
+    .clubs-section { padding: 100px 0; background: var(--bg-secondary); }
+
+    /* Features section */
+    .features-section { padding: 100px 0; }
+
+    /* Stats section */
+    .stats-section { padding: 80px 0; background: linear-gradient(180deg, var(--bg-secondary), var(--bg-primary)); }
+
+    /* Gallery */
+    .gallery-section { padding: 100px 0; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .gallery-item {
+      border-radius: 16px; overflow: hidden; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;
+    }
+    .gallery-item-tall { grid-row: span 2; aspect-ratio: auto; }
+    .gallery-item-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0); display: flex;
+      align-items: center; justify-content: center; transition: background 0.3s ease; color: white;
+      font-size: 2rem; opacity: 0;
+    }
+    .gallery-item:hover .gallery-item-overlay { background: rgba(99,102,241,0.5); opacity: 1; }
+
+    /* Testimonials */
+    .testimonials-section { padding: 100px 0; background: var(--bg-secondary); }
+
+    /* FAQ */
+    .faq-section { padding: 100px 0; }
+
+    /* Newsletter */
+    .newsletter-section-wrap { padding: 80px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- ==============================
+       NAVBAR
+       ============================== -->
+  <nav class="navbar navbar-expand-lg navbar-dark glass-nav fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold display-font text-white" href="/">
+        <span class="text-gradient">⬡</span> Campus<span class="text-gradient">Connect</span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+              aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center gap-1">
+          <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/events">Events</a></li>
+          <li class="nav-item"><a class="nav-link" href="/clubs">Clubs</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/login"><i class="bi bi-shield-lock-fill me-1"></i>Admin</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav align-items-center gap-2" id="auth-nav-options">
+          <!-- Populated by main.js -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==============================
+       HERO SECTION
+       ============================== -->
+  <section class="hero-section position-relative">
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <!-- Left: Content -->
+        <div class="col-lg-6">
+          <div class="section-badge mb-4">
+            <span class="live-dot"></span> Live Platform – 2026
+          </div>
+          <h1 class="hero-headline text-white mb-4">
+            Discover.<br>Register.<br><span class="text-gradient">Experience.</span>
+          </h1>
+          <p class="text-secondary fs-5 mb-5" style="line-height:1.8; max-width:480px;">
+            The next-generation College Event Management Platform. Find hackathons, workshops, cultural fests, and career events — all in one smart hub.
+          </p>
+          <div class="d-flex gap-3 flex-wrap mb-5">
+            <a href="/events" class="btn btn-premium btn-lg" id="explore-btn">
+              <i class="bi bi-calendar-event me-2"></i>Explore Events
+            </a>
+            <a href="/register" class="btn btn-outline-premium btn-lg" id="join-btn">
+              <i class="bi bi-person-plus-fill me-2"></i>Join Free
+            </a>
+          </div>
+          <!-- Stat pills -->
+          <div class="d-flex flex-wrap gap-3">
+            <div class="hero-stat-pill"><i class="bi bi-calendar-check text-gradient"></i> <strong class="text-white" id="hero-event-count">8+</strong> Active Events</div>
+            <div class="hero-stat-pill"><i class="bi bi-people-fill text-gradient"></i> <strong class="text-white" id="hero-student-count">5+</strong> Students</div>
+            <div class="hero-stat-pill"><i class="bi bi-ticket-perforated-fill text-gradient"></i> <strong class="text-white" id="hero-reg-count">10+</strong> Registrations</div>
+          </div>
+        </div>
+
+        <!-- Right: Floating cards -->
+        <div class="col-lg-6 d-flex flex-column gap-4">
+          <div class="float-card" style="animation-delay:0s;">
+            <div class="hero-float-card">
+              <div class="hero-float-icon icon-blue"><i class="bi bi-qr-code-scan"></i></div>
+              <div>
+                <div class="fw-semibold text-white small">QR Check-in System</div>
+                <div class="text-muted" style="font-size:0.8rem;">Instant entry with unique QR passes</div>
+              </div>
+              <div class="ms-auto badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.25);border-radius:20px;padding:4px 12px;font-size:0.75rem;">LIVE</div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-6">
+              <div class="float-card" style="animation-delay:-1.5s;">
+                <div class="glass-card p-4 text-center">
+                  <div class="fs-1 text-gradient mb-2"><i class="bi bi-award-fill"></i></div>
+                  <h3 class="fw-bold text-white mb-1" data-count="25" data-suffix="+">0</h3>
+                  <p class="text-muted mb-0 small">Events Hosted</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="float-card" style="animation-delay:-0.8s;">
+                <div class="glass-card p-4 text-center">
+                  <div class="fs-1 text-gradient-teal mb-2"><i class="bi bi-people-fill"></i></div>
+                  <h3 class="fw-bold text-white mb-1" data-count="1200" data-suffix="+">0</h3>
+                  <p class="text-muted mb-0 small">Students Joined</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="float-card" style="animation-delay:-2s;">
+                <div class="glass-card p-4 text-center">
+                  <div class="fs-1 mb-2" style="background:var(--grad-success);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                    <i class="bi bi-patch-check-fill"></i>
+                  </div>
+                  <h3 class="fw-bold text-white mb-1" data-count="850" data-suffix="+">0</h3>
+                  <p class="text-muted mb-0 small">Certificates</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="float-card" style="animation-delay:-1s;">
+                <div class="glass-card p-4 text-center">
+                  <div class="fs-1 text-gradient-warm mb-2"><i class="bi bi-building"></i></div>
+                  <h3 class="fw-bold text-white mb-1" data-count="20" data-suffix="+">0</h3>
+                  <p class="text-muted mb-0 small">Active Clubs</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="text-center mt-5 pt-4">
+        <a href="#categories" class="scroll-indicator text-decoration-none">
+          <span>Scroll to explore</span>
+          <i class="bi bi-chevron-double-down"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       EVENT CATEGORIES
+       ============================== -->
+  <section class="cat-section" id="categories">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto">
+          <i class="bi bi-grid-3x3-gap-fill"></i> Explore Categories
+        </div>
+        <h2 class="section-title display-5 mb-3">Find Your <span class="text-gradient">Perfect Event</span></h2>
+        <p class="text-secondary fs-5 mx-auto" style="max-width:520px;">
+          From cutting-edge hackathons to vibrant cultural fests — discover events that match your passion.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Technical" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-blue mx-auto"><i class="bi bi-cpu-fill"></i></div>
+              <h5 class="text-white fw-bold mb-1">Technical</h5>
+              <p class="text-muted small mb-0">Coding, robotics, circuits</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Hackathon" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-purple mx-auto"><i class="bi bi-code-slash"></i></div>
+              <h5 class="text-white fw-bold mb-1">Hackathons</h5>
+              <p class="text-muted small mb-0">24h innovation sprints</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Cultural" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-orange mx-auto"><i class="bi bi-music-note-beamed"></i></div>
+              <h5 class="text-white fw-bold mb-1">Cultural</h5>
+              <p class="text-muted small mb-0">Music, dance, arts fests</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Workshop" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-green mx-auto"><i class="bi bi-tools"></i></div>
+              <h5 class="text-white fw-bold mb-1">Workshops</h5>
+              <p class="text-muted small mb-0">Hands-on skill sessions</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Sports" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-orange mx-auto" style="background:rgba(245,158,11,0.12);color:#fbbf24;"><i class="bi bi-trophy-fill"></i></div>
+              <h5 class="text-white fw-bold mb-1">Sports</h5>
+              <p class="text-muted small mb-0">Cricket, football, chess</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Seminar" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-teal mx-auto"><i class="bi bi-person-video3"></i></div>
+              <h5 class="text-white fw-bold mb-1">Seminars</h5>
+              <p class="text-muted small mb-0">Expert talks & insights</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Competition" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-red mx-auto"><i class="bi bi-award-fill"></i></div>
+              <h5 class="text-white fw-bold mb-1">Competitions</h5>
+              <p class="text-muted small mb-0">Quiz, debate, project expo</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/events?category=Career" class="text-decoration-none">
+            <div class="cat-card">
+              <div class="cat-icon icon-pink mx-auto"><i class="bi bi-briefcase-fill"></i></div>
+              <h5 class="text-white fw-bold mb-1">Career</h5>
+              <p class="text-muted small mb-0">Placements & networking</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       COUNTDOWN TO NEXT EVENT
+       ============================== -->
+  <section class="countdown-section" id="countdown-section">
+    <div class="container">
+      <div class="text-center">
+        <div class="section-badge mx-auto mb-3">
+          <i class="bi bi-alarm-fill"></i> Next Event Starting In
+        </div>
+        <h3 class="text-white fw-bold mb-2" id="countdown-event-name">Loading next event...</h3>
+        <p class="text-muted mb-5" id="countdown-event-detail"></p>
+        <div class="countdown-wrapper justify-content-center mb-5">
+          <div class="countdown-unit">
+            <span class="countdown-number" id="cd-days">00</span>
+            <span class="countdown-label">Days</span>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-number" id="cd-hours">00</span>
+            <span class="countdown-label">Hours</span>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-number" id="cd-mins">00</span>
+            <span class="countdown-label">Minutes</span>
+          </div>
+          <div class="countdown-unit">
+            <span class="countdown-number" id="cd-secs">00</span>
+            <span class="countdown-label">Seconds</span>
+          </div>
+        </div>
+        <a href="/events" id="countdown-register-btn" class="btn btn-premium btn-lg">
+          <i class="bi bi-lightning-charge-fill me-2"></i>Register Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       FEATURED EVENTS (from backend)
+       ============================== -->
+  <section class="events-section" id="featured-events">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+        <div>
+          <div class="section-badge">
+            <i class="bi bi-fire"></i> Featured Events
+          </div>
+          <h2 class="section-title display-5 mb-0">Popular Events <span class="text-gradient">Open Now</span></h2>
+        </div>
+        <a href="/events" class="btn btn-outline-premium">
+          <i class="bi bi-grid me-2"></i>View All Events
+        </a>
+      </div>
+
+      <div class="row g-4" id="featured-events-grid">
+        <!-- Skeleton placeholders -->
+        <div class="col-md-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+        <div class="col-md-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+        <div class="col-md-4"><div class="skeleton" style="height:380px;border-radius:20px;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       HOW IT WORKS
+       ============================== -->
+  <section style="padding:80px 0; background:linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto"><i class="bi bi-signpost-2-fill"></i> How It Works</div>
+        <h2 class="section-title display-5 mb-3">Get Started in <span class="text-gradient">4 Steps</span></h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-3 text-center">
+          <div class="feature-card h-100">
+            <div style="font-size:2.5rem;font-weight:800;font-family:'Outfit',sans-serif;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;">01</div>
+            <div class="feature-icon icon-blue mx-auto"><i class="bi bi-person-fill-add"></i></div>
+            <h5 class="text-white fw-bold mb-2">Create Account</h5>
+            <p class="text-secondary small mb-0">Sign up with your college credentials — takes 30 seconds.</p>
+          </div>
+        </div>
+        <div class="col-md-3 text-center">
+          <div class="feature-card h-100">
+            <div style="font-size:2.5rem;font-weight:800;font-family:'Outfit',sans-serif;background:var(--grad-teal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;">02</div>
+            <div class="feature-icon icon-teal mx-auto"><i class="bi bi-search-heart-fill"></i></div>
+            <h5 class="text-white fw-bold mb-2">Browse Events</h5>
+            <p class="text-secondary small mb-0">Filter by category, date, or venue. Find your perfect match.</p>
+          </div>
+        </div>
+        <div class="col-md-3 text-center">
+          <div class="feature-card h-100">
+            <div style="font-size:2.5rem;font-weight:800;font-family:'Outfit',sans-serif;background:var(--grad-success);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;">03</div>
+            <div class="feature-icon icon-green mx-auto"><i class="bi bi-check2-circle"></i></div>
+            <h5 class="text-white fw-bold mb-2">Register Instantly</h5>
+            <p class="text-secondary small mb-0">One click to secure your spot. Get a QR pass immediately.</p>
+          </div>
+        </div>
+        <div class="col-md-3 text-center">
+          <div class="feature-card h-100">
+            <div style="font-size:2.5rem;font-weight:800;font-family:'Outfit',sans-serif;background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;">04</div>
+            <div class="feature-icon icon-orange mx-auto"><i class="bi bi-qr-code-scan"></i></div>
+            <h5 class="text-white fw-bold mb-2">Check In & Collect</h5>
+            <p class="text-secondary small mb-0">Scan QR at entry, attend event, earn your digital certificate.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       COLLEGE CLUBS
+       ============================== -->
+  <section class="clubs-section" id="clubs">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+        <div>
+          <div class="section-badge"><i class="bi bi-people-fill"></i> College Clubs</div>
+          <h2 class="section-title display-5 mb-0">Join Our <span class="text-gradient">Vibrant</span> Community</h2>
+        </div>
+        <a href="/clubs" class="btn btn-outline-premium">
+          <i class="bi bi-arrow-right me-2"></i>All Clubs
+        </a>
+      </div>
+      <div class="row g-4">
+        <!-- Club 1 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(99,102,241,0.3),rgba(67,56,202,0.5));">
+              <div class="club-avatar"><i class="bi bi-cpu-fill text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">CodeCraft</h6>
+              <p class="text-muted" style="font-size:0.75rem;">Technical Club</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>120 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+        <!-- Club 2 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(168,85,247,0.3),rgba(109,40,217,0.5));">
+              <div class="club-avatar"><i class="bi bi-music-note-beamed text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">Rhythmix</h6>
+              <p class="text-muted" style="font-size:0.75rem;">Cultural Club</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>85 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+        <!-- Club 3 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(5,150,105,0.5));">
+              <div class="club-avatar"><i class="bi bi-trophy-fill text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">SportZone</h6>
+              <p class="text-muted" style="font-size:0.75rem;">Sports Club</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>200 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+        <!-- Club 4 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(249,115,22,0.3),rgba(194,65,12,0.5));">
+              <div class="club-avatar"><i class="bi bi-palette-fill text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">ArtVault</h6>
+              <p class="text-muted" style="font-size:0.75rem;">Arts & Design</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>60 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+        <!-- Club 5 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(236,72,153,0.3),rgba(157,23,77,0.5));">
+              <div class="club-avatar"><i class="bi bi-camera-video-fill text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">FrameCraft</h6>
+              <p class="text-muted" style="font-size:0.75rem;">Media Club</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>45 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+        <!-- Club 6 -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="club-card text-center">
+            <div class="club-card-header" style="background:linear-gradient(135deg,rgba(6,182,212,0.3),rgba(3,105,161,0.5));">
+              <div class="club-avatar"><i class="bi bi-rocket-takeoff-fill text-white"></i></div>
+            </div>
+            <div class="club-card-body">
+              <h6 class="text-white fw-bold mb-1">InnovateLab</h6>
+              <p class="text-muted" style="font-size:0.75rem;">R&D Club</p>
+              <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-people-fill me-1"></i>90 members</div>
+              <a href="/clubs" class="btn btn-premium btn-sm mt-3 w-100">Follow</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       WHY CHOOSE US
+       ============================== -->
+  <section class="features-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto"><i class="bi bi-stars"></i> Why CampusConnect</div>
+        <h2 class="section-title display-5 mb-3">Built for <span class="text-gradient">Modern Campuses</span></h2>
+        <p class="text-secondary fs-5 mx-auto" style="max-width:500px;">Everything you need to run, attend, and manage college events — in one powerful platform.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-blue"><i class="bi bi-lightning-charge-fill"></i></div>
+            <h5 class="text-white fw-bold mb-2">Instant Registration</h5>
+            <p class="text-secondary mb-0">Register for any event in seconds. Capacity tracking ensures fair access to all students.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-purple"><i class="bi bi-qr-code-scan"></i></div>
+            <h5 class="text-white fw-bold mb-2">QR Code Check-In</h5>
+            <p class="text-secondary mb-0">Unique QR pass for each registration. Scan at entry for fast, paperless attendance tracking.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-green"><i class="bi bi-patch-check-fill"></i></div>
+            <h5 class="text-white fw-bold mb-2">Digital Certificates</h5>
+            <p class="text-secondary mb-0">Auto-generated participation certificates for every completed event. Download or share instantly.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-orange"><i class="bi bi-bell-fill"></i></div>
+            <h5 class="text-white fw-bold mb-2">Live Notifications</h5>
+            <p class="text-secondary mb-0">Get real-time alerts for registrations, event changes, announcements, and reminders.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-teal"><i class="bi bi-graph-up-arrow"></i></div>
+            <h5 class="text-white fw-bold mb-2">Advanced Analytics</h5>
+            <p class="text-secondary mb-0">Admins get full registration trends, attendance charts, and category insights — all in real time.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card h-100">
+            <div class="feature-icon icon-pink"><i class="bi bi-shield-lock-fill"></i></div>
+            <h5 class="text-white fw-bold mb-2">Role-Based Access</h5>
+            <p class="text-secondary mb-0">Separate secure dashboards for students, organizers, and administrators — fully protected.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       PLATFORM STATISTICS
+       ============================== -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto"><i class="bi bi-bar-chart-fill"></i> Platform Statistics</div>
+        <h2 class="section-title display-5 mb-0">Numbers That <span class="text-gradient">Speak</span></h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-6 col-md-3">
+          <div class="stat-counter-card">
+            <div class="stat-counter-num text-gradient" data-count="25" data-suffix="+">0</div>
+            <div class="stat-counter-label">Events Organized</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-counter-card">
+            <div class="stat-counter-num text-gradient-teal" data-count="1200" data-suffix="+">0</div>
+            <div class="stat-counter-label">Students Registered</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-counter-card">
+            <div class="stat-counter-num" style="background:var(--grad-success);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" data-count="850" data-suffix="+">0</div>
+            <div class="stat-counter-label">Certificates Issued</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-counter-card">
+            <div class="stat-counter-num text-gradient-warm" data-count="20" data-suffix="+">0</div>
+            <div class="stat-counter-label">Active Clubs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       TESTIMONIALS
+       ============================== -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-badge mx-auto"><i class="bi bi-chat-heart-fill"></i> Student Reviews</div>
+        <h2 class="section-title display-5 mb-0">What Students <span class="text-gradient">Say</span></h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="testimonial-card h-100">
+            <div class="text-warning mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            <p class="text-secondary mb-4" style="font-size:0.95rem;line-height:1.8;">"CampusConnect completely transformed how I discover events. The QR check-in at CodeSprint was seamless — no queues, no paper!"</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="testimonial-avatar">AP</div>
+              <div>
+                <div class="text-white fw-bold small">Aarav Patel</div>
+                <div class="text-muted" style="font-size:0.78rem;">Computer Engineering, Year 3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card h-100">
+            <div class="text-warning mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            <p class="text-secondary mb-4" style="font-size:0.95rem;line-height:1.8;">"The AI recommendations section showed me the AI & Cloud seminar — perfect match for my interests. Got registered in 2 clicks!"</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="testimonial-avatar" style="background:var(--grad-teal);">DI</div>
+              <div>
+                <div class="text-white fw-bold small">Diya Iyer</div>
+                <div class="text-muted" style="font-size:0.78rem;">Information Technology, Year 4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card h-100">
+            <div class="text-warning mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+            <p class="text-secondary mb-4" style="font-size:0.95rem;line-height:1.8;">"Managing registrations for our Web Dev Workshop was so easy from the admin dashboard. The analytics charts helped us understand attendance."</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="testimonial-avatar" style="background:var(--grad-success);">KS</div>
+              <div>
+                <div class="text-white fw-bold small">Kabir Singh</div>
+                <div class="text-muted" style="font-size:0.78rem;">Mechanical Engineering, Organizer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       FAQ
+       ============================== -->
+  <section class="faq-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="text-center mb-5">
+            <div class="section-badge mx-auto"><i class="bi bi-question-circle-fill"></i> FAQ</div>
+            <h2 class="section-title display-5 mb-0">Frequently Asked <span class="text-gradient">Questions</span></h2>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How do I register for an event?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Create an account, browse events, and click "Register" on any open event. You'll instantly get a QR code pass for check-in.</div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Is CampusConnect free for students?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Yes! CampusConnect is completely free for students. Register with your college email and start discovering events immediately.</div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>What is the QR Check-In system?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">After registration, you receive a unique QR code ticket. Organizers scan it at the event entrance to instantly verify attendance — no paper required.</div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Can I cancel my registration?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Yes, you can cancel your registration from your dashboard before the event starts. The seat will be freed up for other students.</div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How do I get my participation certificate?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">After attending an event and being marked present by the organizer, a digital certificate is automatically available in your dashboard under "My Certificates".</div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How can my club create and manage events?</span>
+              <i class="bi bi-chevron-down faq-arrow"></i>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Club organizers can log in through the Admin Portal to create events, manage registrations, run the QR scanner, and export attendance reports.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       NEWSLETTER
+       ============================== -->
+  <section class="newsletter-section-wrap">
+    <div class="container">
+      <div class="newsletter-section">
+        <div class="section-badge mx-auto mb-4"><i class="bi bi-envelope-heart-fill"></i> Stay Updated</div>
+        <h2 class="section-title fs-1 fw-bold text-white mb-3">Never Miss an Event</h2>
+        <p class="text-secondary mb-5 fs-5">Get notified about new events, hackathons, and opportunities before seats fill up.</p>
+        <div class="newsletter-input-wrap">
+          <input type="email" id="newsletter-email" class="form-control form-glass flex-grow-1" placeholder="Enter your college email...">
+          <button class="btn btn-premium px-4" onclick="subscribeNewsletter()">
+            <i class="bi bi-send-fill me-2"></i>Subscribe
+          </button>
+        </div>
+        <p class="text-muted small mt-4 mb-0"><i class="bi bi-shield-check me-1"></i>No spam. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================
+       FOOTER
+       ============================== -->
+  <footer>
+    <div class="container">
+      <div class="row g-5 mb-5">
+        <div class="col-lg-4">
+          <div class="footer-brand text-white mb-3">
+            <span class="text-gradient">⬡</span> CampusConnect
+          </div>
+          <p class="text-secondary mb-4" style="font-size:0.9rem;line-height:1.8;">Smart College Event Management and Student Engagement System. Engineered for TAE-I Final Year Evaluation 2026.</p>
+          <div>
+            <a href="#" class="footer-social"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="footer-social"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="footer-social"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="footer-social"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h6 class="text-white fw-bold mb-3">Platform</h6>
+          <div class="d-flex flex-column">
+            <a href="/" class="footer-link">Home</a>
+            <a href="/events" class="footer-link">Events</a>
+            <a href="/clubs" class="footer-link">Clubs</a>
+            <a href="/about" class="footer-link">About Us</a>
+            <a href="/contact" class="footer-link">Contact</a>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h6 class="text-white fw-bold mb-3">Student</h6>
+          <div class="d-flex flex-column">
+            <a href="/login" class="footer-link">Login</a>
+            <a href="/register" class="footer-link">Register</a>
+            <a href="/student/dashboard" class="footer-link">Dashboard</a>
+            <a href="/student/my-registrations" class="footer-link">My Events</a>
+          </div>
+        </div>
+        <div class="col-md-3 col-lg-4">
+          <h6 class="text-white fw-bold mb-3">Contact</h6>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size:0.9rem;">
+              <i class="bi bi-geo-alt-fill text-gradient flex-shrink-0"></i>
+              <span>Dhankawadi, Pune – 411043</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size:0.9rem;">
+              <i class="bi bi-envelope-fill text-gradient flex-shrink-0"></i>
+              <span>support@campusconnect.edu</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size:0.9rem;">
+              <i class="bi bi-telephone-fill text-gradient flex-shrink-0"></i>
+              <span>+91 20 2437 1101</span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <a href="/admin/login" class="btn btn-outline-premium btn-sm">
+              <i class="bi bi-shield-lock-fill me-1"></i>Admin Portal
+            </a>
+          </div>
+        </div>
+      </div>
+      <hr class="border-secondary opacity-10">
+      <div class="row align-items-center mt-4">
+        <div class="col-md-6 text-center text-md-start">
+          <span class="text-muted small">© 2026 CampusConnect. Built with ❤️ for TAE-I Engineering Evaluation.</span>
+        </div>
+        <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+          <span class="text-muted small">Node.js · Express · Bootstrap 5 · Vanilla JS</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Global JS -->
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+      // ---- FETCH & RENDER FEATURED EVENTS (from backend) ----
+      try {
+        const response = await apiFetch('/api/events');
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const grid = document.getElementById('featured-events-grid');
+          const openEvents = result.data.filter(e =>
+            e.status === 'Registration Open' || e.status === 'Upcoming'
+          );
+
+          // Update hero stat pills
+          const students = document.getElementById('hero-student-count');
+          const regs = document.getElementById('hero-reg-count');
+          if (students) students.textContent = result.data.length + '+';
+
+          if (openEvents.length === 0) {
+            grid.innerHTML = `<div class="col-12 text-center py-5 text-muted"><i class="bi bi-calendar-x fs-1 d-block mb-3"></i><p>No events currently open for registration.</p></div>`;
+          } else {
+            const featured = openEvents.slice(0, 3);
+            grid.innerHTML = '';
+            featured.forEach(event => {
+              grid.innerHTML += `<div class="col-md-4">${buildEventCard(event)}</div>`;
+            });
+
+            // Countdown to first upcoming event
+            const nextEvent = openEvents.find(e => e.date);
+            if (nextEvent) {
+              document.getElementById('countdown-event-name').textContent = nextEvent.eventName;
+              document.getElementById('countdown-event-detail').textContent =
+                `${formatDate(nextEvent.date)} · ${nextEvent.venue || ''}`;
+              const regBtn = document.getElementById('countdown-register-btn');
+              if (regBtn) regBtn.href = `/event/${nextEvent.eventId}`;
+
+              startCountdown(
+                new Date(nextEvent.date),
+                document.getElementById('cd-days'),
+                document.getElementById('cd-hours'),
+                document.getElementById('cd-mins'),
+                document.getElementById('cd-secs'),
+                () => {
+                  document.getElementById('countdown-event-name').textContent = 'Event has started!';
+                }
+              );
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load events:', e);
+        document.getElementById('featured-events-grid').innerHTML =
+          `<div class="col-12 text-center py-4 text-muted"><p>Could not load events. Please refresh.</p></div>`;
+      }
+    });
+
+    // Newsletter subscribe
+    function subscribeNewsletter() {
+      const email = document.getElementById('newsletter-email').value.trim();
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', 'warning');
+        return;
+      }
+      showToast('🎉 Subscribed! You\'ll receive event updates soon.', 'success');
+      document.getElementById('newsletter-email').value = '';
+    }
+  </script>
+</body>
+</html>

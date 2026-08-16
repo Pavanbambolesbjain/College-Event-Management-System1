@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard – CampusConnect</title>
+  <meta name="description" content="Your personal event hub — manage registrations, view QR tickets, track certificates, and discover recommended events.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+  <link href="/css/dashboard.css" rel="stylesheet">
+  <!-- QR Code library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark glass-nav fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold display-font text-white" href="/">
+        <span class="text-gradient">⬡</span> Campus<span class="text-gradient">Connect</span>
+      </a>
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <span class="text-muted small d-none d-md-inline"><i class="bi bi-person-fill text-gradient me-1"></i>Student Panel</span>
+        <div class="position-relative" style="cursor:pointer;" onclick="showToast('No new notifications', 'info')">
+          <i class="bi bi-bell-fill text-secondary fs-5"></i>
+          <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background:var(--accent-danger);font-size:0.6rem;display:none;">3</span>
+        </div>
+        <button onclick="performLogout()" class="btn btn-outline-premium btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <!-- Profile card -->
+      <div class="profile-card">
+        <div class="profile-avatar" id="sidebar-avatar">?</div>
+        <h6 class="text-white fw-bold mb-1" id="sidebar-name">Loading...</h6>
+        <div class="text-muted" style="font-size:0.78rem;" id="sidebar-course">–</div>
+        <div class="mt-2">
+          <span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.25);font-size:0.72rem;border-radius:20px;padding:3px 10px;">
+            <span class="live-dot" style="width:6px;height:6px;margin-right:4px;"></span>Active Student
+          </span>
+        </div>
+      </div>
+
+      <div class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        <a href="/student/dashboard" class="sidebar-link active" data-title="Dashboard">
+          <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+        </a>
+        <a href="/student/profile" class="sidebar-link" data-title="My Profile">
+          <i class="bi bi-person-bounding-box"></i> <span>My Profile</span>
+        </a>
+        <a href="/student/my-registrations" class="sidebar-link" data-title="My Registrations">
+          <i class="bi bi-journal-bookmark-fill"></i> <span>My Registrations</span>
+        </a>
+        <a href="/events" class="sidebar-link" data-title="Browse Events">
+          <i class="bi bi-calendar-event-fill"></i> <span>Browse Events</span>
+        </a>
+        <a href="/certificates" class="sidebar-link" data-title="Certificates">
+          <i class="bi bi-patch-check-fill"></i> <span>Certificates</span>
+        </a>
+        <a href="/student/feedback" class="sidebar-link" data-title="Feedback">
+          <i class="bi bi-chat-heart-fill"></i>
+          <span>Give Feedback</span>
+          <span class="notif-dot"></span>
+        </a>
+
+        <div class="sidebar-section-label">Account</div>
+        <a href="/student/settings" class="sidebar-link" data-title="Settings">
+          <i class="bi bi-gear-fill"></i> <span>Settings</span>
+        </a>
+      </div>
+
+      <div class="sidebar-bottom">
+        <a href="/" class="sidebar-link" data-title="Home">
+          <i class="bi bi-house-door-fill"></i> <span>Home Portal</span>
+        </a>
+        <button onclick="performLogout()" class="sidebar-link w-100 border-0 bg-transparent text-start" style="color:var(--accent-danger);" data-title="Sign Out">
+          <i class="bi bi-box-arrow-left"></i> <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-5">
+        <div>
+          <h2 class="text-white fw-bold mb-1" id="welcome-message">Welcome back! 👋</h2>
+          <p class="text-secondary mb-0" id="welcome-date">Loading your dashboard...</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="/events" class="btn btn-outline-premium btn-sm">
+            <i class="bi bi-search me-1"></i>Browse Events
+          </a>
+          <a href="/events" class="btn btn-premium btn-sm">
+            <i class="bi bi-calendar-plus me-1"></i>Register New Event
+          </a>
+        </div>
+      </div>
+
+      <!-- STAT WIDGETS (from backend) -->
+      <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-xl-3">
+          <div class="stat-widget">
+            <div>
+              <p class="text-secondary small mb-1">Total Registered</p>
+              <h3 class="stat-widget-val" id="stat-total">–</h3>
+              <div class="stat-trend up"><i class="bi bi-arrow-up-right"></i> All time</div>
+            </div>
+            <div class="stat-widget-icon icon-blue"><i class="bi bi-card-checklist"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="stat-widget stat-widget-teal">
+            <div>
+              <p class="text-secondary small mb-1">Upcoming Events</p>
+              <h3 class="stat-widget-val" id="stat-upcoming">–</h3>
+              <div class="stat-trend up"><i class="bi bi-arrow-up-right"></i> Scheduled</div>
+            </div>
+            <div class="stat-widget-icon icon-teal"><i class="bi bi-hourglass-split"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="stat-widget stat-widget-success">
+            <div>
+              <p class="text-secondary small mb-1">Completed Events</p>
+              <h3 class="stat-widget-val" id="stat-completed">–</h3>
+              <div class="stat-trend up"><i class="bi bi-check-circle-fill"></i> Attended</div>
+            </div>
+            <div class="stat-widget-icon icon-green"><i class="bi bi-award-fill"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="stat-widget stat-widget-warm">
+            <div>
+              <p class="text-secondary small mb-1">Reviews Submitted</p>
+              <h3 class="stat-widget-val" id="stat-feedback">–</h3>
+              <div class="stat-trend"><i class="bi bi-star-fill text-warning"></i> Feedback given</div>
+            </div>
+            <div class="stat-widget-icon icon-orange"><i class="bi bi-chat-quote-fill"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+
+        <!-- MY QR TICKET WIDGET -->
+        <div class="col-xl-4">
+          <div class="glass-card p-4 h-100">
+            <h5 class="text-white fw-bold mb-4"><i class="bi bi-qr-code text-gradient me-2"></i>My QR Pass</h5>
+            <div id="qr-pass-container">
+              <!-- Will be populated after checking registrations -->
+              <div class="qr-pass-widget text-center py-4">
+                <div class="text-muted mb-3"><i class="bi bi-hourglass-split fs-1 opacity-50"></i></div>
+                <p class="text-secondary small mb-0">Loading your QR pass...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT REGISTRATIONS TABLE -->
+        <div class="col-xl-8">
+          <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="text-white fw-bold mb-0"><i class="bi bi-clock-history text-gradient me-2"></i>Recent Activity</h5>
+              <a href="/student/my-registrations" class="btn btn-outline-premium btn-sm">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="table custom-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-regs-body">
+                  <tr><td colspan="5" class="text-center py-4 text-muted">Loading registrations...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- AI RECOMMENDED EVENTS (smart filtering from backend) -->
+        <div class="col-xl-8">
+          <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h5 class="text-white fw-bold mb-1"><i class="bi bi-stars text-gradient me-2"></i>AI Recommended Events</h5>
+                <p class="text-muted small mb-0">Based on your interests and past registrations</p>
+              </div>
+              <a href="/events" class="btn btn-outline-premium btn-sm">Browse All</a>
+            </div>
+            <div class="row g-3" id="recommended-events-grid">
+              <div class="col-12 text-center py-4 text-muted"><i class="bi bi-hourglass-split fs-2 opacity-50 d-block mb-2"></i>Loading recommendations...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="col-xl-4">
+          <div class="glass-card p-4 h-100">
+            <h5 class="text-white fw-bold mb-4"><i class="bi bi-bell-fill text-gradient me-2"></i>Notifications</h5>
+            <div id="notifications-list">
+              <div class="notification-item">
+                <div class="notification-icon icon-blue"><i class="bi bi-calendar-check-fill" style="font-size:0.85rem;"></i></div>
+                <div>
+                  <div class="text-white small fw-semibold">Registration Confirmed</div>
+                  <div class="text-secondary" style="font-size:0.82rem;">Your slot for TechFest 2026 is secured.</div>
+                  <div class="notification-time">2 hours ago</div>
+                </div>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon icon-orange"><i class="bi bi-alarm-fill" style="font-size:0.85rem;"></i></div>
+                <div>
+                  <div class="text-white small fw-semibold">Event Reminder</div>
+                  <div class="text-secondary" style="font-size:0.82rem;">CodeSprint Hackathon starts in 2 days.</div>
+                  <div class="notification-time">Yesterday</div>
+                </div>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon icon-green"><i class="bi bi-patch-check-fill" style="font-size:0.85rem;"></i></div>
+                <div>
+                  <div class="text-white small fw-semibold">Certificate Ready</div>
+                  <div class="text-secondary" style="font-size:0.82rem;">Your Web Dev Workshop certificate is available.</div>
+                  <div class="notification-time">3 days ago</div>
+                </div>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon icon-purple"><i class="bi bi-stars" style="font-size:0.85rem;"></i></div>
+                <div>
+                  <div class="text-white small fw-semibold">New Event Posted</div>
+                  <div class="text-secondary" style="font-size:0.82rem;">Machine Learning Summit – register now!</div>
+                  <div class="notification-time">1 week ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = getCurrentUser();
+      if (!user) {
+        window.location.href = '/login?error=Please log in to access your dashboard.';
+        return;
+      }
+
+      // Personalize UI
+      const firstName = user.fullName ? user.fullName.split(' ')[0] : 'Student';
+      const initials  = user.fullName ? user.fullName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) : '?';
+      document.getElementById('welcome-message').textContent = `Welcome back, ${firstName}! 👋`;
+      document.getElementById('welcome-date').textContent = `Today is ${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+
+      const sidebarName = document.getElementById('sidebar-name');
+      const sidebarAvatar = document.getElementById('sidebar-avatar');
+      const sidebarCourse = document.getElementById('sidebar-course');
+      if (sidebarName) sidebarName.textContent = user.fullName || '–';
+      if (sidebarAvatar) sidebarAvatar.textContent = initials;
+      if (sidebarCourse) sidebarCourse.textContent = user.course || user.role || '–';
+
+      // Show notification badge
+      document.getElementById('notif-badge').style.display = 'inline-block';
+
+      try {
+        const response = await apiFetch(`/api/dashboard/student/${user.studentId || user.id}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const { stats, recentRegistrations, availableEvents } = result.data;
+
+          // Render stat widgets
+          animateCounter(document.getElementById('stat-total'),     stats.totalRegistrations);
+          animateCounter(document.getElementById('stat-upcoming'),  stats.upcomingEvents);
+          animateCounter(document.getElementById('stat-completed'), stats.completedEvents);
+          animateCounter(document.getElementById('stat-feedback'),  stats.feedbackSubmitted);
+
+          // Render QR Pass for first upcoming registration
+          const qrContainer = document.getElementById('qr-pass-container');
+          const upcomingReg = recentRegistrations.find(r => r.status === 'Registered');
+          if (upcomingReg) {
+            qrContainer.innerHTML = `
+              <div class="qr-pass-widget">
+                <div class="qr-code-container" id="qr-canvas-wrap"></div>
+                <div class="fw-bold text-white small mb-1">${upcomingReg.eventName}</div>
+                <div class="text-muted" style="font-size:0.78rem;"><i class="bi bi-calendar3 me-1"></i>${formatDate(upcomingReg.date)}</div>
+                <div class="text-muted" style="font-size:0.78rem;"><i class="bi bi-geo-alt-fill me-1"></i>${upcomingReg.venue || '–'}</div>
+                <div class="mt-2">
+                  <span class="badge-status status-open">Valid Ticket</span>
+                </div>
+                <div class="text-muted mt-2" style="font-size:0.7rem;"># ${upcomingReg.registrationId || 'REG-' + Date.now()}</div>
+              </div>
+            `;
+            // Generate QR code
+            if (typeof QRCode !== 'undefined') {
+              QRCode.toCanvas = undefined; // fallback for CDN
+              const qrWrap = document.getElementById('qr-canvas-wrap');
+              const canvas = document.createElement('canvas');
+              qrWrap.appendChild(canvas);
+              try {
+                QRCode.toCanvas(canvas, `CC-REG-${upcomingReg.registrationId}-${user.studentId}`, { width: 120, color: { dark: '#1a1a2e', light: '#ffffff' } });
+              } catch(e) {
+                qrWrap.innerHTML = `<div style="font-size:3rem;color:#6366f1;"><i class="bi bi-qr-code"></i></div>`;
+              }
+            }
+          } else {
+            qrContainer.innerHTML = `
+              <div class="qr-pass-widget text-center py-3">
+                <div class="mb-3"><i class="bi bi-ticket-perforated text-muted fs-1 opacity-50"></i></div>
+                <p class="text-secondary small mb-3">No active registrations yet.</p>
+                <a href="/events" class="btn btn-premium btn-sm">
+                  <i class="bi bi-calendar-event me-1"></i>Browse Events
+                </a>
+              </div>
+            `;
+          }
+
+          // Render recent registrations table
+          const regsBody = document.getElementById('recent-regs-body');
+          if (recentRegistrations.length === 0) {
+            regsBody.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">
+              <i class="bi bi-calendar-x fs-2 d-block mb-2 opacity-50"></i>
+              No registrations yet. <a href="/events" class="text-gradient text-decoration-none">Browse events →</a>
+            </td></tr>`;
+          } else {
+            regsBody.innerHTML = '';
+            recentRegistrations.slice(0, 5).forEach(reg => {
+              let badgeClass = 'status-open';
+              if (reg.status === 'Cancelled') badgeClass = 'status-cancelled';
+              if (reg.status === 'Attended')  badgeClass = 'status-completed';
+              if (reg.status === 'Registered') badgeClass = 'status-open';
+
+              regsBody.innerHTML += `
+                <tr>
+                  <td><a href="/event/${reg.eventId}" class="text-white fw-semibold text-decoration-none">${reg.eventName}</a></td>
+                  <td>${formatDate(reg.date)}</td>
+                  <td class="text-secondary">${reg.venue || '–'}</td>
+                  <td><span class="badge-status ${badgeClass}">${reg.status}</span></td>
+                  <td>
+                    <a href="/event/${reg.eventId}" class="btn btn-outline-premium btn-sm py-1 px-3">
+                      <i class="bi bi-eye me-1"></i>View
+                    </a>
+                  </td>
+                </tr>
+              `;
+            });
+          }
+
+          // AI Recommended Events (smart filtering by category from past registrations)
+          const recGrid = document.getElementById('recommended-events-grid');
+          if (!availableEvents || availableEvents.length === 0) {
+            recGrid.innerHTML = `<div class="col-12 text-center py-4 text-muted">
+              <i class="bi bi-stars fs-2 d-block mb-2 opacity-50"></i>
+              <p class="mb-0">Register for events to get personalized recommendations.</p>
+            </div>`;
+          } else {
+            recGrid.innerHTML = '';
+            // Collect user categories from recent registrations
+            const userCategories = new Set(recentRegistrations.map(r => r.category).filter(Boolean));
+            // Prioritize same-category events first (AI sim)
+            let recommended = [...availableEvents];
+            if (userCategories.size > 0) {
+              recommended.sort((a, b) => {
+                const aMatch = userCategories.has(a.category) ? 1 : 0;
+                const bMatch = userCategories.has(b.category) ? 1 : 0;
+                return bMatch - aMatch;
+              });
+            }
+
+            recommended.slice(0, 4).forEach(evt => {
+              const bannerClass = getCategoryBannerClass(evt.category);
+              const pillClass   = getCategoryPillClass(evt.category);
+              const isRecommended = userCategories.has(evt.category) || userCategories.size === 0;
+              recGrid.innerHTML += `
+                <div class="col-sm-6">
+                  <div class="glass-card overflow-hidden" style="border-radius:14px;">
+                    <div class="${bannerClass}" style="height:80px;display:flex;align-items:center;padding:0 16px;gap:12px;">
+                      <i class="bi ${getCategoryIcon(evt.category)} text-white fs-3 opacity-70"></i>
+                      <div>
+                        <div class="text-white fw-bold small line-clamp-2">${evt.eventName}</div>
+                        <span class="cat-pill ${pillClass}">${evt.category}</span>
+                      </div>
+                    </div>
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="text-secondary" style="font-size:0.78rem;"><i class="bi bi-calendar3 me-1"></i>${formatDate(evt.date)}</div>
+                        <div class="text-secondary" style="font-size:0.78rem;"><i class="bi bi-geo-alt-fill me-1"></i>${evt.venue || '–'}</div>
+                        ${isRecommended && userCategories.size > 0 ? '<div style="font-size:0.72rem;color:#818cf8;margin-top:4px;"><i class="bi bi-stars me-1"></i>Matches your interests</div>' : ''}
+                      </div>
+                      <a href="/event/${evt.eventId}" class="btn btn-premium btn-sm">Register</a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Dashboard error:', error);
+        showToast('Could not load dashboard data. Please refresh.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

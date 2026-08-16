@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login – CampusConnect</title>
+  <meta name="description" content="Login to your CampusConnect student account to access your events, tickets, and certificates.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; display: flex; align-items: stretch; }
+    .auth-page { display: flex; min-height: 100vh; width: 100%; }
+
+    /* Left Panel */
+    .auth-left {
+      flex: 1;
+      background: linear-gradient(145deg, #0a0b14 0%, #0f1120 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(99,102,241,0.18) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(168,85,247,0.12) 0%, transparent 50%);
+    }
+    .auth-left-content { position: relative; z-index: 1; text-align: center; max-width: 400px; }
+
+    /* Right Panel */
+    .auth-right {
+      flex: 0 0 480px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 50px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 991px) {
+      .auth-left { display: none; }
+      .auth-right { flex: 1; border-left: none; padding: 40px 24px; }
+    }
+
+    .auth-input-group { position: relative; margin-bottom: 18px; }
+    .auth-input-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); pointer-events: none; font-size: 1rem;
+    }
+    .auth-input-group input { padding-left: 46px; height: 52px; border-radius: 12px !important; }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 16px; margin: 24px 0;
+      color: var(--text-muted); font-size: 0.82rem;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-color);
+    }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- LEFT: Visual Panel -->
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <a href="/" class="d-inline-block mb-5">
+        <div style="font-size:1.5rem;font-weight:800;font-family:'Outfit',sans-serif;color:white;">
+          <span class="text-gradient">⬡</span> Campus<span class="text-gradient">Connect</span>
+        </div>
+      </a>
+      <h2 class="text-white fw-bold mb-3" style="font-size:2.2rem;">Welcome back! 👋</h2>
+      <p class="text-secondary mb-5" style="font-size:1.05rem;line-height:1.8;">Login to access your events, QR tickets, certificates, and personalized recommendations.</p>
+
+      <!-- Mini feature list -->
+      <div class="d-flex flex-column gap-3 text-start">
+        <div class="d-flex align-items-center gap-3">
+          <div class="stat-widget-icon icon-blue flex-shrink-0" style="width:38px;height:38px;font-size:0.9rem;"><i class="bi bi-qr-code-scan"></i></div>
+          <div>
+            <div class="text-white small fw-semibold">QR Event Passes</div>
+            <div class="text-muted" style="font-size:0.78rem;">Unique QR ticket for every event</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="stat-widget-icon icon-green flex-shrink-0" style="width:38px;height:38px;font-size:0.9rem;"><i class="bi bi-patch-check-fill"></i></div>
+          <div>
+            <div class="text-white small fw-semibold">Digital Certificates</div>
+            <div class="text-muted" style="font-size:0.78rem;">Auto-generated for every attendance</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="stat-widget-icon icon-purple flex-shrink-0" style="width:38px;height:38px;font-size:0.9rem;"><i class="bi bi-stars"></i></div>
+          <div>
+            <div class="text-white small fw-semibold">AI Recommendations</div>
+            <div class="text-muted" style="font-size:0.78rem;">Personalized events for your interests</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Login Form -->
+  <div class="auth-right">
+    <!-- Mobile logo -->
+    <div class="d-lg-none text-center mb-5">
+      <a href="/" style="font-size:1.4rem;font-weight:800;font-family:'Outfit',sans-serif;color:white;text-decoration:none;">
+        <span class="text-gradient">⬡</span> Campus<span class="text-gradient">Connect</span>
+      </a>
+    </div>
+
+    <h3 class="text-white fw-bold mb-1">Sign In</h3>
+    <p class="text-secondary mb-5">Enter your credentials to access your student account.</p>
+
+    <div id="login-error-msg" class="alert" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;border-radius:12px;display:none;" role="alert">
+      <i class="bi bi-exclamation-circle-fill me-2"></i><span></span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="auth-input-group">
+        <i class="bi bi-envelope-fill auth-input-icon"></i>
+        <input type="email" id="email" class="form-control form-glass" placeholder="College email address" required autocomplete="email">
+      </div>
+      <div class="auth-input-group">
+        <i class="bi bi-lock-fill auth-input-icon"></i>
+        <input type="password" id="password" class="form-control form-glass" placeholder="Password" required autocomplete="current-password">
+        <button type="button" class="position-absolute border-0 bg-transparent text-muted" style="right:14px;top:50%;transform:translateY(-50%);" onclick="togglePassword('password', this)">
+          <i class="bi bi-eye-fill"></i>
+        </button>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <label class="d-flex align-items-center gap-2 text-secondary small" style="cursor:pointer;">
+          <input type="checkbox" style="accent-color:var(--accent-primary);"> Remember me
+        </label>
+        <a href="#" class="text-gradient text-decoration-none small fw-semibold" onclick="showToast('Password reset coming soon!','info')">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-premium w-100 py-3 mb-4" id="login-btn" style="font-size:1rem;">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to CampusConnect
+      </button>
+    </form>
+
+    <div class="auth-divider">Or continue with</div>
+
+    <!-- Demo credentials -->
+    <div class="glass-card p-3 mb-4" style="border-radius:12px;">
+      <div class="text-muted small mb-2 fw-semibold"><i class="bi bi-info-circle me-1"></i>Demo Student Credentials</div>
+      <div class="text-secondary small">Email: <code style="color:#818cf8;">aarav.patel@college.edu</code></div>
+      <div class="text-secondary small">Password: <code style="color:#818cf8;">password123</code></div>
+      <button class="btn btn-outline-premium btn-sm w-100 mt-2" onclick="fillDemo()">
+        <i class="bi bi-lightning-charge me-1"></i>Fill Demo Credentials
+      </button>
+    </div>
+
+    <p class="text-center text-secondary small">
+      Don't have an account? <a href="/register" class="text-gradient text-decoration-none fw-semibold">Create Account Free →</a>
+    </p>
+    <p class="text-center mt-2">
+      <a href="/admin/login" class="text-muted text-decoration-none small">
+        <i class="bi bi-shield-lock-fill me-1"></i>Admin Portal
+      </a>
+    </p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    btn.innerHTML = isPass ? '<i class="bi bi-eye-slash-fill"></i>' : '<i class="bi bi-eye-fill"></i>';
+  }
+
+  function fillDemo() {
+    document.getElementById('email').value = 'aarav.patel@college.edu';
+    document.getElementById('password').value = 'password123';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('login-error-msg');
+    el.querySelector('span').textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('login-btn');
+
+    document.getElementById('login-error-msg').style.display = 'none';
+
+    if (!email || !password) {
+      showError('Please enter both email and password.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing In...';
+
+    try {
+      const response = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setCurrentUser(data.user);
+        showToast(`Welcome back, ${data.user.fullName?.split(' ')[0]}! 🎉`, 'success');
+        setTimeout(() => {
+          window.location.href = '/student/dashboard';
+        }, 800);
+      } else {
+        showError(data.message || 'Invalid credentials. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Sign In to CampusConnect';
+      }
+    } catch (err) {
+      showError('Server error. Please try again.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Sign In to CampusConnect';
+    }
+  });
+
+  // Redirect if already logged in
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = getCurrentUser();
+    if (user) {
+      window.location.href = user.role === 'admin' ? '/admin/dashboard' : '/student/dashboard';
+    }
+  });
+</script>
+</body>
+</html>
